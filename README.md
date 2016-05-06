@@ -15,27 +15,17 @@ The course currently using this repo is EDPS 845, taught summer 2016.
 * R, available at [cran.r-project.org/](http://cran.r-project.org/)
 * RStudio, IDE for R, available at [www.rstudio.com/](https://www.rstudio.com/)
 * Git, accessed via the command line, available at [git-scm.com/](https://git-scm.com/)
+* *An Introduction to R*, by Venables, Smith and the R Core Team, PDF at [cran.r-project.org/doc/manuals/](https://cran.r-project.org/doc/manuals/)
 * *Advanced R*, by Hadley Wickam, available at [adv-r.had.co.nz/](http://adv-r.had.co.nz/)
 * *R Packages*, also by Hadley Wickam, available at [r-pkgs.had.co.nz/](http://adv-r.had.co.nz/)
 
 ## Objectives of the course
 
-**Week 1**
-
-1. Find and complete intro R resources as needed (see [cran.r-project.org/other-docs.html](https://cran.r-project.org/other-docs.html)), then master advanced techniques for R programming using first half of *Advanced R* completing associated assignments.
-2. Learn the basics of git, using the command line, on your local machine (see [git-scm.com/book/en/v2/Getting-Started-Git-Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics)).
-3. Use git to fork this repo, and another of your choice, and copy to local.
-
-**Week 2**
-
-1. Complete *Advanced R* with associated assignments.
-2. Use git to access and become familiar with R package repos on github.
-3. Contribute a stand-alone function, with documentation, to an existing R package.
-
-**Week 3**
-
-1. Outline and create your own (small) R package, collaborating with a partner, with repo on github.
-2. Review the R package of another student group.
+1. Master basic concepts and procedures for importing, exporting, manipulating, analyzing, modeling, and graphing data in R.
+2. Master advanced R programming. Modify existing functionality and write and document your own functions.
+3. Learn the basics of Git, using the command line, on your local machine. Use Git to fork this repo, and another of your choice, and copy to local.
+3. Contribute to an existing R package.
+4. Collaborate with other students to develop, document, and share to GitHub your own (small) R package.
 
 ## Some recommendations
 
@@ -43,3 +33,7 @@ The course currently using this repo is EDPS 845, taught summer 2016.
 * Use roxygen2 for documenting your functions and package.
 * Use R markdown and knitr for creating reports.
 * Submit issues to github.
+
+## Resources
+
+Share some resources here.
