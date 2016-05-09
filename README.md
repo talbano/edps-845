@@ -27,11 +27,12 @@ The course currently using this repo is EDPS 845, taught summer 2016.
 3. Contribute to an existing R package.
 4. Collaborate with other students to develop, document, and share to GitHub your own (small) R package.
 
-## Some recommendations
+## Requirements
 
-* Use RStudio for development, and for git version control, after learning the command line.
+* Use RStudio for development.
+* Use Git at the command line for version control.
 * Use roxygen2 for documenting your functions and package.
-* Use R markdown and knitr for creating reports.
+* Use R markdown and knitr for creating assignment docs and reports.
 * Submit issues to github.
 
 ## Resources
