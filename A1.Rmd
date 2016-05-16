@@ -29,9 +29,7 @@ Your file should have an Rmd extension, and you should check that it compiles to
 
 1. Create and index a vector using a logical, integer, negative integer, and character vector.
 
-2. Create and index a vector using a logical, integer, negative integer, and character vector.
-
-3. Create a simple data frame containing a numeric variable, character variable, and factor with at least 3 levels. Use the data frame to demonstrate how R codes and handles missing data. 
+2. Create a simple data frame containing a numeric variable, character variable, and factor with at least 3 levels. Use the data frame to demonstrate how R codes and handles missing data. 
 
 ### Chapter 3
 
