@@ -1,0 +1,82 @@
+---
+title: "EDPS 845 Assignment 1"
+author: "Tony Albano"
+---
+
+## Overview
+
+Demonstrate your mastery of concepts and procedures covered in *An Introduction to R*, chapters 1 through 9. See Appendix A for examples.
+
+Complete this assignment by responding to each question below using your own original code, in addition to answering any questions. Follow Google's [R coding conventions](https://google.github.io/styleguide/Rguide.xml), and use [R markdown](http://rmarkdown.rstudio.com/index.html) formatting for your responses, with example R code written as
+
+```{r}
+# Comment within some example code
+```
+
+Your file should have an Rmd extension, and you should check that it compiles to HTML using the *Knit* command in RStudio (this runs `knitr::knit()` on the file). Note that you can already *Knit* this file to see how it works.
+
+## Exercises
+
+### Chapter 1
+
+1. Show that you can access the home page for the HTML R help menu, as well as help files for individual functions.
+
+2. Demonstrate correct and incorrect naming of R objects.
+
+3. How do you list all available objects in the R workspace? And how do you remove individual objects?
+
+### Chapter 2
+
+1. Create and index a vector using a logical, integer, negative integer, and character vector.
+
+2. Create and index a vector using a logical, integer, negative integer, and character vector.
+
+3. Create a simple data frame containing a numeric variable, character variable, and factor with at least 3 levels. Use the data frame to demonstrate how R codes and handles missing data. 
+
+### Chapter 3
+
+1. Demonstrate how to check and change the modes and attributes of R objects.
+
+### Chapter 4
+
+1. Complete the exercise on page 17, where you calculate 95% confidence intervals for state mean incomes.
+
+2. In what order are the levels of ordered factors stored in?
+
+### Chapter 5
+
+1. Create an array with dimensions `c(3, 6, 2)` and use it to demonstrate array indexing.
+
+2. Create a two dimensional array of 100 integers sampled with replacement from the vector 1:20, and use an index array to set the diagonal values to 0.
+
+3. Construct the same array using the `array()` function and using a vector with the `dim()` set. Prove they are the same.
+
+4. Use your array from 5.1, and another with the same dimensions, to demonstrate how arithmetic works with arrays.
+
+5. Show how to clear the dimensions of an array.
+
+### Chapter 6
+
+1. Demonstrate the different ways of subsetting a list.
+
+2. What is the difference between giving multiple lists to `list()` versus `c()`?
+
+3. How do data frames in R relate to lists?
+
+4. What is the purpose of `attach()`?
+
+### Chapter 7
+
+1. Demonstrate the different approaches to reading in data from an external file.
+
+### Chapter 8
+
+1. Demonstrate the use of distribution functions to simulate data and calculate probabilities and quantiles.
+
+2. Simulate data from a t distribution and check their normality.
+
+### Chapter 9
+
+1. What is the difference between `if() else` and `ifelse()`?
+
+2. Demonstrate the use of a `for()` loop.
