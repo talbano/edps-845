@@ -11,13 +11,22 @@ This file is located in the github repo for the course. Once you've synced your 
 Here we'll write the data sets as csv files. Each of these 13 files contains total scores for a group of students on four subtests. Some subtests differ by test, some are used across multiple tests.
 
 ```{r, eval = FALSE}
-# Write 13 text files, one per test
+# Get and load the R package equate
+install.packages("equate")
 library("equate")
+# Write 13 text files, one per test
 for(i in 1:13)
   write.csv(PISA$totals[[i]], file = paste0("test", i, ".csv"))
 ```
 
 Note that the equate package already contains the PISA data in R. Again, we're pretending that's not the case, at least in exercise 1 below. You will however use the other PISA data sets contained in the equate package. In equate, `PISA` is a list containing multiple data sets. As shown above, the total scores for the 13 tests are contained in `PISA$totals`.
+
+The epmr package will also come in handy for some of the exercises below. It's not on CRAN, but you can install directly from github using the devtools package.
+
+```{r, eval = FALSE}
+install.packages("devtools")
+devtools::install_github("talbano/epmr")
+```
 
 ## Exercises
 
@@ -25,7 +34,7 @@ Here are the different issues we need to address, with some tips on how you migh
 
 1. Read in the 13 data files, storing each one as a data frame, with R object names `test1` through `test13`. Rather than write the code out for each test, use a loop. See the `assign()` function as a way of programmatically naming your 13 R objects.
 
-2. Prep the data for analysis. Run a frequency table on every variable and summarize the results, noting any unexpected values, and the counts of missings by subtest and test.
+2. Prep the data for analysis. Run a frequency table on every variable and summarize the results, noting any unexpected values, and the counts of missings by subtest and test. This and some of the following exercises will be a lot easier if you put all your 13 data frames into a single list. You can then use `lapply()` to iterate through it.
 
 3. Append a new column to each data set that contains the school id for the student. The row names in each test data set correspond to the row names in the PISA data set, PISA$students. This data set contains the `PISA$students$schoolid` variable. Get frequency distributions for each test so as to examine numbers of students by school by test.
 
