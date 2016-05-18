@@ -40,3 +40,4 @@ The course currently using this repo is EDPS 845, taught summer 2016.
 * The git documentation: [git-scm.com/doc](https://git-scm.com/doc)
 * Short list of [common git commands](https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html)
 * Syncing a fork: [help.github.com/articles/syncing-a-fork/](https://help.github.com/articles/syncing-a-fork/)
+* Intro measurement book with R examples: [cehs01.unl.edu/aalbano/intro-measurement-r/](http://cehs01.unl.edu/aalbano/intro-measurement-r/)
