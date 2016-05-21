@@ -1,0 +1,563 @@
+---
+title: "EDPS 845 Assignment 2"
+author: "Brooke Milstead"
+---
+
+# Exercises
+
+## Foundations
+
+### Data Structures
+
+1. What are the six types of atomic vector? How does a list differ from an atomic vector?
+
+```
+The four common types of atomic vectors include logical, integer, double (also called numeric), and character.  
+Complex and Raw are the two rare types of atomic vectors. 
+```
+
+```
+Lists and atomic vectors differ in that list elements can be of any type.
+Typically, lists are constructed by using list() instead of c()
+```
+
+2. What makes is.vector() and is.numeric() fundamentally different to is.list() and is.character()?
+
+```
+is.vector() returns TRUE if the object is a vector with no attributes besides names.
+It does not test if an object is a vector
+```
+
+```
+is.numeric() returns TRUE for integer and double vectors.
+It is a general test for the object being interpretable as numbers.
+It does not specifically test for double vectors.
+
+```
+
+```
+is.list() returns TRUE by testing if an object is of the type list or a pairlist of length > 0.
+```
+
+```
+is.character() tests if an object is of the type character by returning TRUE or False
+
+```
+
+3. Test your knowledge of vector coercion rules by predicting the output of the following uses of c():
+
+```
+c(1, FALSE) will be coerced to the numeric or double type
+c("a", 1) will be coerced to the character type
+c(list(1), "a") will be coerced to the list type
+c(TRUE, 1L) will be coerced to the integer type
+```
+```{r}
+#
+ex.3a <- c(1, FALSE)
+class(ex.3a)
+ex.3b <- c("a", 1)
+class(ex.3b)
+ex.3c <- c(list(1), "a")
+class(ex.3c)
+ex.3d <- c(TRUE, 1L)
+class(ex.3d)
+```
+
+
+4. Why do you need to use unlist() to convert a list to an atomic vector? Why doesn't as.vector() work?
+
+```
+unlist() results in a simplified vector containing all of the atomic vector components that occurred in the object
+unlist() can recoerce within the list
+```
+
+```
+as.vector() coerces the argument or object into whichever vector is most convenient
+The return value can be a list or atomic vector, because lists are vectors
+as.vector() can't recoerce within a list
+```
+
+5. Why is 1 == "1" true? Why is -1 < FALSE true? Why is "one" < 2 false?
+
+```
+1 == "1" is true because coercion is used for equality comparisons
+When coercion is comparing a numeric and character value, the numeric value will convert to the character type.
+Therefore a 1 of type character is equal to 1 of type character
+```
+
+```
+-1 < FALSE is true because greater than operation also induces coercion.  FALSE is coerced into an integer resulting in -1 < 0 which is true
+```
+
+```
+"one" < 2 is false because 2 is coerced into a character.
+In R lexicographical ordering is used to compare character types, there for the position of "o" comes before "2" resulting in the statement being false
+```
+
+
+6. Why is the default missing value, NA, a logical vector? What's special about logical vectors? (Hint: think about c(FALSE, NA_character_).)
+
+```
+NA is a logical vector in order to avoid unnecessary coercion when missing values are present.
+Logical vectors are at the top of the coercion hierarchy chain.
+This means having missing values will not change the nature of the rest of the values because of coercion rules.
+```
+
+### Subsetting- Data Types
+
+1. Fix each of the following common data frame subsetting errors
+
+```{r}
+#mtcars[mtcars$cyl = 4, ]
+mtcars[mtcars$cyl == 4, ]
+
+#mtcars[-1:4, ]
+mtcars[-(1:4),]
+ 
+#mtcars[mtcars$cyl <= 5]
+mtcars[mtcars$cyl <= 5, ]
+ 
+#mtcars[mtcars$cyl == 4 | 6, ]
+mtcars[mtcars$cyl == 4 | mtcars$cyl == 6, ]
+
+```
+
+2. Why does x <- 1:5; x[NA] yield five missing values? (Hint: why is it different from x[NA_real_]?)
+
+```{r}
+
+x <- 1:5
+x[NA]
+
+#The x[NA] index is vectorized instead of just a single NA so five missing values return
+```
+
+3. What does upper.tri() return? How does subsetting a matrix with it work? Do we need any additional subsetting rules to describe its behavior?
+
+```{r}
+
+ex.23 <- runif(25, -1, 1)
+dim(ex.23) <- c(5,5)
+ex.23
+
+#upper.tri() returns a matrix of logical values for the upper triangle of the matrix
+upper.tri(ex.23)
+
+#subseting the matrix with upper.tri results in the matrix values of the upper triangle of the matrix
+ex.23[upper.tri(ex.23)]
+
+
+```
+
+4. Why does mtcars[1:20] return an error? How does it differ from the similar mtcars[1:20, ]?
+
+```{r}
+#mtcars[1:20] returns an error because mtcars has two dimensions so a second argument needs to be specified
+
+#mtcars[1:20, ] subsets rows 1-20 of mtcars for all of the columns.
+#The empty argument represents an argument for all of the columns.
+mtcars[1:20, ]
+```
+
+5. Implement your own function that extracts the diagonal entries from a matrix (it should behave like diag(x) where x is a matrix).
+
+```{r}
+#Function to extract diagonal entries
+ExtractDiag <- function(x) {
+ d <- c() 
+ for (i in 1:min(dim(x))) {
+ d <- c(d, x[i,i])}
+ d}
+
+#test function compared to diag()
+
+diag(ex.23)
+
+ExtractDiag(ex.23)
+
+```
+
+6. What does df[is.na(df)] <- 0 do? How does it work?
+
+```{r}
+#df[is.na(df)] selects the values of df that have values of NA
+#When subseting is.na() and assigning a value of 0, the NA values are replaced with 0's
+
+#example
+ex.26<- c(2,4,6,NA,10)
+ex.26[is.na(ex.26)] <- 0
+ex.26
+```
+
+
+### Subsetting- Subsetting Operations
+
+1. Given a linear model, e.g., mod <- lm(mpg ~ wt, data = mtcars), extract the residual degrees of freedom. Extract the R squared from the model summary (summary(mod))
+
+```{r}
+#Set up
+mod <- lm(mpg ~ wt, data = mtcars)
+mod_sum <- summary(mod)
+
+#Extract residual df
+mod$df.residual
+
+#Extract R squared
+mod_sum$r.squared
+
+```
+
+
+### Subsetting- Subsetting and Assignment
+
+1. How would you randomly permute the columns of a data frame? (This is an important technique in random forests.) Can you simultaneously permute the rows and columns in one step?
+
+```{r}
+#data
+ex.SA1 <- c(1:50)
+dim(ex.SA1) <- c(10, 5)
+ex.SA1 <- as.data.frame(ex.SA1)
+ex.SA1 
+
+#randomly permute columns
+ex.SA1[ ,sample(ncol(ex.SA1))]
+
+#randomly permute rows and columns
+ex.SA1[sample(nrow(ex.SA1)) ,sample(ncol(ex.SA1))]
+
+```
+
+2. How would you select a random sample of m rows from a data frame? What if the sample had to be contiguous (i.e., with an initial row, a final row, and every row in between)?
+
+```{r}
+#random rows
+m <-3
+select <- sample(nrow(ex.SA1),m)
+
+ex.SA1[select, ]
+
+#Contiguous sample
+f <- sample(nrow(ex.SA1), 1)
+l <- f + 1
+select <- f:l
+
+ex.SA1[select,]
+
+```
+
+3. How could you put the columns in a data frame in alphabetical order?
+
+```{r}
+#data frame
+ex.SA3 <- data.frame(a = 1, z = 1, p = 1, b = 1, i = 1, r = 1, v = 1, f = 1, m = 1, s = 1) 
+ex.SA3 
+
+#sort columns
+names(ex.SA3) <- sort(names(ex.SA3))
+ex.SA3
+```
+
+
+### Functions- Components
+
+1. What function allows you to tell if an object is a function? What function allows you to tell if a function is a primitive function?
+
+```
+is.function() allows you to tell if an object is a function
+
+is.primitive() allows you to tell if a function is a primitive function
+```
+
+2. This code makes a list of all functions in the base package.
+Use it to answer the following questions:
+
+```{r}
+#list of all functions
+o <- mget(ls("package:base"), inherits = TRUE)
+funct <- Filter(is.function, o)
+```
+
++ a. Which base function has the most arguments?
+
+```{r}
+#Scan has the most arguments
+most.arg <- which.max(lapply(funct, function(x) length(formals(x))))
+most.arg 
+```
+
++ b. How many base functions have no arguments? What's special about those functions?
+
+```{r}
+#225 base functions have no arguments
+#most of the functions are primitives
+NoArg <- funct[lapply(funct, function(x) length(formals(x)))==0]
+l.NoArg <- length(NoArg)
+l.NoArg
+```
+
++ c. How could you adapt the code to find all primitive functions?
+
+```{r}
+#183 primitive functions
+prim.funct <- Filter(is.primitive, o)
+l.prim.funct <- length(prim.funct)
+l.prim.funct
+```
+
+3. What are the three important components of a function?
+
+```
+The body() component codes inside the function
+
+The formals() component is a list of formal arguments that control how to call a function
+
+The environment() component is the map that identifies the location for the function's variables
+```
+
+4. When does printing a function not show what environment it was created in?
+
+```
+If the function is created in the global environment it will not show what environment it was created in.
+Also, if the function is primitive the environment it was created in will not show
+```
+
+### Functions- Lexical Scoping
+
+1. What does the following code return? Why? What does each of the three c's mean?
+
+```{r}
+#c() creates a vector combining the elements
+#middle c indicates an argument of the character c
+#the last c is the variable representing the number 10
+c <- 10
+c(c = c)
+```
+
+2. What are the four principles that govern how R looks for values?
+
+```
+Name masking:  the variables are evaluated according to the highest-precedence environment.  This process starts in the local environment and goes upwards through each parent environment.
+```
+
+```
+Functions vs. variables:  Function names are follow the same rules as for variables. Objects are ignored if the function has the same name and the function is being used.
+Using the same names for objects and functions are confusing so it should be avoided.
+```
+
+```
+Fresh start:  unless the environment is changed, functions do not have state 
+```
+
+```
+Dynamic lookup: evaluation of the variables are done when needed or when the function is run.
+The variables may be different depending on the function's environment.
+```
+
+3. What does the following function return? Make a prediction before running the code yourself.
+```{r}
+#x will be evaluated from top to bottom
+f <- function(x) {
+f <- function(x) {
+f <- function(x) {
+x ^ 2
+}
+f(x) + 1
+}
+f(x) * 2
+}
+f(10)
+```
+
+
+### Functions- Arguments
+
+1. Clarify the following list of odd function calls:
+
+```{r}
+#original
+x <- sample(replace = TRUE, 20, x = c(1:10, NA))
+y <- runif(min = 0, max = 1, 20)
+cor(m = "k", y = y, u = "p", x = x)
+
+#clarified code
+
+#reordered and simplified
+x <- sample(x = c(1:10, NA), size = 20, replace = TRUE)
+
+#reordered and simplified
+y <- runif(20,0,1)
+
+#reordered to make and simplified some code.  Since I am less familiar with cor function I used the full names to aid in my understanding of what is happening 
+cor(x, y, use = "pairwise.complete.obs", method = "kendall")
+```
+
+2. What does this function return? Why? Which principle does it illustrate?
+
+```{r}
+#This function returns 3 because x is 2 and y is 1. I believe this principle relates to name masking
+#The x argument is the default argument in the environment, so the assignment of y to 1 trumps second y assignment to 0
+f1 <- function(x = {y <- 1; 2}, y = 0) {
+ x + y
+}
+f1()
+```
+
+3. What does this function return? Why? Which principle does it illustrate?
+
+```{r}
+#The function returns 100.  I believe this principle represents dynamic lookup.
+#The x is not evaluated until z has an assignment
+f2 <- function(x = z) {
+  z <- 100
+  x
+}
+f2()
+```
+
+
+### Functions- Special Calls
+
+1. Create a list of all the replacement functions found in the base package. Which ones are primitive functions?
+
+```{r}
+#list of all replacement functions found in base package
+o <- mget(ls("package:base"), inherits = TRUE)
+f <- Filter(is.function, o)
+
+sub.char <- function(x) {
+substr(x,nchar(x)-1,nchar(x))
+}
+
+funct.names <- names(f)
+funct.names.char <- sapply(funct.names, sub.char)
+
+list.replacement <- funct.names[funct.names.char=="<-"]
+list.replacement
+
+#primitive functions
+prim.bfunct <- funct.names[funct.names.char=="<-" & unlist(lapply(f,is.primitive))]
+prim.bfunct
+
+```
+  
+2. What are valid names for user-created infix functions?
+
+```
+valid names for user-created infix functions is a name between two %
+```
+
+3. Create an infix xor() operator.
+
+```{r}
+#xor()
+`%xor%` <- function(a,b) (a | b) & !(a&b)
+
+#testing
+T %xor% T
+F %xor% F
+T %xor% F
+F %xor% T
+ 
+```
+
+4. Create infix versions of the set functions intersect(), union(), and setdiff().
+
+```{r}
+#testing data
+x <- c(2, 2, 4, 6, 8, 8)
+y <- c(1, 2, 3, 4, 5, 6, 7, 8)
+
+#for intersect
+`%^%` <- function(a,b) {
+unique(a[is.element(a,b)])}
+
+x %^% y
+
+#for union
+`%U%` <- function(a,b) {
+unique(c(a,b))}
+
+x %U% y
+
+
+#for set difference
+`%-%` <- function(a,b) {
+unique(a[!is.element(a,b)])}
+
+y %-% x
+```
+
+5. Create a replacement function that modifies a random location in a vector.
+
+```{r}
+#test data
+RL.test <- 1:5
+
+#replacement function to modify a random location
+`random.location<-` <- function(a,value) {
+a[sample(length(a),1)] <- value
+a}
+
+#test
+RL.test
+random.location(RL.test) <- -5
+RL.test
+```
+
+
+### Functions- Return Values
+
+1. How does the chdir parameter of source() compare to in_dir()? Why might you prefer one approach to the other?
+
+```
+The chdir for source() is TRUE if the working directory is temporally change to the directory containing the file.  The chdir approach is more constrained so it may be helpful in reducing errors in the program
+
+in_dir() has the ability to save the original working directory when a temporary working directory is set, so the original working directory can still be accessed.  The in_dir() approach is more flexible so it allows for more customization and flexibility in the program
+```
+
+2. What function undoes the action of library()? How do you save and restore the values of options() and par()?
+
+```
+The detach() function undoes the action of library()
+
+For options(): 
+options(thing = val) can save options
+getOption(thing) can be used to retrieve the values of the options
+
+For par():
+par(thing = val) can be used to save par
+```
+3. Write a function that opens a graphics device, runs the supplied code, and closes the graphics device (always, regardless of whether or not the plotting code worked).
+
+```{r}
+#function
+plot.f <- function(path, code) {
+ pdf(path)
+ on.exit(dev.off())
+ force(code)}
+```
+
+4. We can use on.exit() to implement a simple version of capture.output(). Compare capture.output() to capture.output2(). How do the functions differ? What features have I removed to make the key ideas easier to see? How have I rewritten the key ideas to be easier to understand?
+
+```{r}
+
+capture.output2 <- function(code) {
+temp <- tempfile()
+on.exit(file.remove(temp), add = TRUE)
+
+sink(temp)
+on.exit(sink(), add = TRUE)
+
+force(code)
+readLines(temp)}
+
+capture.output2(cat("a", "b", "c", sep = "\n"))
+capture.output(cat("a", "b", "c", sep = "\n"))
+
+#The same values are returned for the two functions
+#The capture.output2 has a lot less lines of code compared to capture.output
+#capture.output more extensively writes out the methods used.
+#Capture.output2 applies the methods moreso without detailed writing the methods in the code
+#capture.output2 may be limited compared to capture.output because it appears that the capture.output function can also overwrite a file
+```
