@@ -34,12 +34,65 @@ Here are the different issues we need to address, with some tips on how you migh
 
 1. Read in the 13 data files, storing each one as a data frame, with R object names `test1` through `test13`. Rather than write the code out for each test, use a loop. See the `assign()` function as a way of programmatically naming your 13 R objects.
 
+test1 <- read.csv("test1.csv", row.names = 1)
+
+for(i in 1:13)
+  assign(paste0("test", i), read.csv(paste0("test", i, ".csv"),
+  row.names = 1))
+
 2. Prep the data for analysis. Run a frequency table on every variable and summarize the results, noting any unexpected values, and the counts of missings by subtest and test. This and some of the following exercises will be a lot easier if you put all your 13 data frames into a single list. You can then use `lapply()` to iterate through it.
+
+test <- list(test1, test2, test3, test4, test5, test6, test7,
+  test8, test9, test10, test11, test12, test13)
+names(test) <- paste0("test", 1:13)
 
 3. Append a new column to each data set that contains the school id for the student. The row names in each test data set correspond to the row names in the PISA data set, PISA$students. This data set contains the `PISA$students$schoolid` variable. Get frequency distributions for each test so as to examine numbers of students by school by test.
 
+test$test1$schoolid <- PISA$students[rownames(test$test1), "schoolid"]
+test$test2$schoolid <- PISA$students[rownames(test$test2), "schoolid"]
+test$test3$schoolid <- PISA$students[rownames(test$test3), "schoolid"]
+test$test4$schoolid <- PISA$students[rownames(test$test4), "schoolid"]
+test$test5$schoolid <- PISA$students[rownames(test$test5), "schoolid"]
+test$test6$schoolid <- PISA$students[rownames(test$test6), "schoolid"]
+test$test7$schoolid <- PISA$students[rownames(test$test7), "schoolid"]
+test$test8$schoolid <- PISA$students[rownames(test$test8), "schoolid"]
+test$test9$schoolid <- PISA$students[rownames(test$test9), "schoolid"]
+test$test10$schoolid <- PISA$students[rownames(test$test10), "schoolid"]
+test$test11$schoolid <- PISA$students[rownames(test$test11), "schoolid"]
+test$test12$schoolid <- PISA$students[rownames(test$test12), "schoolid"]
+test$test13$schoolid <- PISA$students[rownames(test$test13), "schoolid"]
+
+for(i in names(test))
+  test[[i]]$schoolid <-
+    PISA$students[rownames(test[[i]]), "schoolid"]
+
 4. Find descriptives for each test and subtest by school. Collate the results into a snazzy table using either `knitr::kable()` or `xtable::xtable()`. Descriptives can be obtained with `epmr::dstudy()`.
 
+# In my list of tests, loop through the columns of each data frame,
+# running descriptives by column, for each schoolid
+
+# Let's try one data frame, one column, one schoolid
+dstudy(test$test1$m1[test$test1$schoolid == 1])
+
+# Let's now try for all school ids for a variable in a data frame
+tapply(test$test1$m1, test$test1$schoolid, dstudy)
+
+# Let's now try for all school ids for all variables in a data frame
+apply(test$test1[, 1:4], 2, tapply, test$test1$schoolid, dstudy)
+
+# Let's now try for all school ids for all variables in all data frames
+# Can't be done
+
+# More clear to just use for loops
+for(i in names(test)) {
+  for(j in 1:4) {
+    print(tapply(test[[i]][, j], test[[i]]$schoolid, epmr::dstudy))
+  }
+}
+
 5. Find descriptives and internal consistency reliabilities for each subtest, by test, and collate them into another nice table. Your table should also summarize results by subject area. Reliabilities can be obtained with `epmr::rstudy()`.
+
+# Very similar to question 4, but instead of a tapply within your
+# second loop, just use apply
 
 6. We know that any test administered in written form will require, to some extent, reading ability, though the test itself may not be intended to measure reading ability. We also know that science often involves some amount of math ability. Use linear models to examine the relationships between science, as a dependent variable, and math and reading, as independent variables. Note that only 6 of the 13 tests contain a math, reading, and science subtest. If a test contains more than one subtest in a subject area, choose one. Summarize results across these 6 tests.
