@@ -48,6 +48,8 @@ names(test) <- paste0("test", 1:13)
 
 3. Append a new column to each data set that contains the school id for the student. The row names in each test data set correspond to the row names in the PISA data set, PISA$students. This data set contains the `PISA$students$schoolid` variable. Get frequency distributions for each test so as to examine numbers of students by school by test.
 
+```{r}
+# The long way
 test$test1$schoolid <- PISA$students[rownames(test$test1), "schoolid"]
 test$test2$schoolid <- PISA$students[rownames(test$test2), "schoolid"]
 test$test3$schoolid <- PISA$students[rownames(test$test3), "schoolid"]
@@ -62,12 +64,15 @@ test$test11$schoolid <- PISA$students[rownames(test$test11), "schoolid"]
 test$test12$schoolid <- PISA$students[rownames(test$test12), "schoolid"]
 test$test13$schoolid <- PISA$students[rownames(test$test13), "schoolid"]
 
+# The right way
 for(i in names(test))
   test[[i]]$schoolid <-
     PISA$students[rownames(test[[i]]), "schoolid"]
+```
 
 4. Find descriptives for each test and subtest by school. Collate the results into a snazzy table using either `knitr::kable()` or `xtable::xtable()`. Descriptives can be obtained with `epmr::dstudy()`.
 
+```{r}
 # In my list of tests, loop through the columns of each data frame,
 # running descriptives by column, for each schoolid
 
@@ -82,17 +87,35 @@ apply(test$test1[, 1:4], 2, tapply, test$test1$schoolid, dstudy)
 
 # Let's now try for all school ids for all variables in all data frames
 # Can't be done
+```
 
+```{r}
 # More clear to just use for loops
 for(i in names(test)) {
   for(j in 1:4) {
     print(tapply(test[[i]][, j], test[[i]]$schoolid, epmr::dstudy))
   }
 }
+```
 
 5. Find descriptives and internal consistency reliabilities for each subtest, by test, and collate them into another nice table. Your table should also summarize results by subject area. Reliabilities can be obtained with `epmr::rstudy()`.
 
+```{r}
 # Very similar to question 4, but instead of a tapply within your
 # second loop, just use apply
+
+# Probably easiest to get descriptives and reliabilities separately
+# as they won't mix well in the same loop
+
+# Here's how you'd get reliablity for test1$m1 using rstudy()
+# You need to extract the item names for m1 from PISA$items
+# Converting factor to character is key when using this as an
+# indexing object
+m1items <- as.character(PISA$items$itemid[PISA$items$clusterid == "m1"])
+# For all students taking m1
+rstudy(PISA$students[, m1items])
+# For all students in booklet 1, i.e., test1, taking m1
+rstudy(PISA$students[PISA$students$bookid == 1, m1items])
+```
 
 6. We know that any test administered in written form will require, to some extent, reading ability, though the test itself may not be intended to measure reading ability. We also know that science often involves some amount of math ability. Use linear models to examine the relationships between science, as a dependent variable, and math and reading, as independent variables. Note that only 6 of the 13 tests contain a math, reading, and science subtest. If a test contains more than one subtest in a subject area, choose one. Summarize results across these 6 tests.
