@@ -11,9 +11,14 @@ This file is located in the github repo for the course. Once you've synced your 
 Here we'll write the data sets as csv files. Each of these 13 files contains total scores for a group of students on four subtests. Some subtests differ by test, some are used across multiple tests.
 
 ```{r, eval = FALSE}
-# Get and load the R package equate
+# Get the R package equate
 install.packages("equate")
+```
+```{r}
+# Load equate and epmr
 library("equate")
+```
+```{r eval = FALSE}
 # Write 13 text files, one per test
 for(i in 1:13)
   write.csv(PISA$totals[[i]], file = paste0("test", i, ".csv"))
@@ -27,43 +32,50 @@ The epmr package will also come in handy for some of the exercises below. It's n
 install.packages("devtools")
 devtools::install_github("talbano/epmr")
 ```
-
+```{r}
+library("epmr")
+```
 ## Exercises
 
 Here are the different issues we need to address, with some tips on how you might go about writing R code to address them. The goal here is to read the data into R, prep and clean them up, analyze them, and compile results into a report.
 
 1. Read in the 13 data files, storing each one as a data frame, with R object names `test1` through `test13`. Rather than write the code out for each test, use a loop. See the `assign()` function as a way of programmatically naming your 13 R objects.
 
+```{r}
 test1 <- read.csv("test1.csv", row.names = 1)
 
 for(i in 1:13)
   assign(paste0("test", i), read.csv(paste0("test", i, ".csv"),
   row.names = 1))
+```
 
 2. Prep the data for analysis. Run a frequency table on every variable and summarize the results, noting any unexpected values, and the counts of missings by subtest and test. This and some of the following exercises will be a lot easier if you put all your 13 data frames into a single list. You can then use `lapply()` to iterate through it.
 
+```{r}
 test <- list(test1, test2, test3, test4, test5, test6, test7,
   test8, test9, test10, test11, test12, test13)
 names(test) <- paste0("test", 1:13)
+```
 
 3. Append a new column to each data set that contains the school id for the student. The row names in each test data set correspond to the row names in the PISA data set, PISA$students. This data set contains the `PISA$students$schoolid` variable. Get frequency distributions for each test so as to examine numbers of students by school by test.
 
+```{r, eval = FALSE}
+# The long way, not evaluated by knitr
+test[["test1"]]$schoolid <- PISA$students[rownames(test[["test1"]]), "schoolid"]
+test[["test2"]]$schoolid <- PISA$students[rownames(test[["test2"]]), "schoolid"]
+test[["test3"]]$schoolid <- PISA$students[rownames(test[["test3"]]), "schoolid"]
+test[["test4"]]$schoolid <- PISA$students[rownames(test[["test4"]]), "schoolid"]
+test[["test5"]]$schoolid <- PISA$students[rownames(test[["test5"]]), "schoolid"]
+test[["test6"]]$schoolid <- PISA$students[rownames(test[["test6"]]), "schoolid"]
+test[["test7"]]$schoolid <- PISA$students[rownames(test[["test7"]]), "schoolid"]
+test[["test8"]]$schoolid <- PISA$students[rownames(test[["test8"]]), "schoolid"]
+test[["test9"]]$schoolid <- PISA$students[rownames(test[["test9"]]), "schoolid"]
+test[["test10"]]$schoolid <- PISA$students[rownames(test[["test10"]]), "schoolid"]
+test[["test11"]]$schoolid <- PISA$students[rownames(test[["test11"]]), "schoolid"]
+test[["test12"]]$schoolid <- PISA$students[rownames(test[["test12"]]), "schoolid"]
+test[["test13"]]$schoolid <- PISA$students[rownames(test[["test13"]]), "schoolid"]
+```
 ```{r}
-# The long way
-test$test1$schoolid <- PISA$students[rownames(test$test1), "schoolid"]
-test$test2$schoolid <- PISA$students[rownames(test$test2), "schoolid"]
-test$test3$schoolid <- PISA$students[rownames(test$test3), "schoolid"]
-test$test4$schoolid <- PISA$students[rownames(test$test4), "schoolid"]
-test$test5$schoolid <- PISA$students[rownames(test$test5), "schoolid"]
-test$test6$schoolid <- PISA$students[rownames(test$test6), "schoolid"]
-test$test7$schoolid <- PISA$students[rownames(test$test7), "schoolid"]
-test$test8$schoolid <- PISA$students[rownames(test$test8), "schoolid"]
-test$test9$schoolid <- PISA$students[rownames(test$test9), "schoolid"]
-test$test10$schoolid <- PISA$students[rownames(test$test10), "schoolid"]
-test$test11$schoolid <- PISA$students[rownames(test$test11), "schoolid"]
-test$test12$schoolid <- PISA$students[rownames(test$test12), "schoolid"]
-test$test13$schoolid <- PISA$students[rownames(test$test13), "schoolid"]
-
 # The right way
 for(i in names(test))
   test[[i]]$schoolid <-
@@ -72,7 +84,9 @@ for(i in names(test))
 
 4. Find descriptives for each test and subtest by school. Collate the results into a snazzy table using either `knitr::kable()` or `xtable::xtable()`. Descriptives can be obtained with `epmr::dstudy()`.
 
-```{r}
+```{r, eval = FALSE}
+# Not evaluated because there's too much output
+
 # In my list of tests, loop through the columns of each data frame,
 # running descriptives by column, for each schoolid
 
@@ -89,11 +103,12 @@ apply(test$test1[, 1:4], 2, tapply, test$test1$schoolid, dstudy)
 # Can't be done
 ```
 
-```{r}
+```{r, eval = FALSE}
 # More clear to just use for loops
+# Not evaluated by knitr because it's so slow
 for(i in names(test)) {
   for(j in 1:4) {
-    print(tapply(test[[i]][, j], test[[i]]$schoolid, epmr::dstudy))
+    tapply(test[[i]][, j], test[[i]]$schoolid, epmr::dstudy)
   }
 }
 ```
@@ -107,6 +122,19 @@ for(i in names(test)) {
 # Probably easiest to get descriptives and reliabilities separately
 # as they won't mix well in the same loop
 
+# Get descriptives
+out <- matrix(NA, nrow = 52, ncol = 9)
+for(i in 1:13) {
+  for(j in 1:4) {
+    out[j + 4 * (i - 1), 1:9] <-
+      unlist(dstudy(test[[i]][, j]))
+  }
+}
+
+# Or just use lapply
+# lapply(test, apply, 2, dstudy)
+```
+```{r}
 # Here's how you'd get reliablity for test1$m1 using rstudy()
 # You need to extract the item names for m1 from PISA$items
 # Converting factor to character is key when using this as an
@@ -116,6 +144,41 @@ m1items <- as.character(PISA$items$itemid[PISA$items$clusterid == "m1"])
 rstudy(PISA$students[, m1items])
 # For all students in booklet 1, i.e., test1, taking m1
 rstudy(PISA$students[PISA$students$bookid == 1, m1items])
+```
+
+```{r}
+# By test and subtest
+rout <- numeric(length = nrow(out))
+for(i in 1:13) {
+  for(j in 1:4) {
+    tempcluster <- colnames(test[[i]])[j]
+    tempitems <- as.character(PISA$items$itemid[PISA$items$clusterid == tempcluster])
+    rout[j + 4 * (i - 1)] <- rstudy(PISA$students[PISA$students$bookid == i, tempitems])[1, 1]
+  }
+}
+```
+
+```{r}
+# Combine in a matrix, and print as a table
+drout <- data.frame(out, rout)
+colnames(drout) <- c("mean", "median", "sd", "skew", "kurt", "min",
+  "max", "n", "na", "alpha")
+knitr::kable(drout, digits = 2)
+```
+
+```{r}
+# Rewrite this stuff replacing tapply with our own function
+dstudy2 <- function(thetest) {
+  out <- matrix(NA, nrow = length(levels(thetest$schoolid)), ncol = 9)
+  for(j in 1:4) {
+    out[j, ] <- unlist(tapply(thetest[, j], thetest$schoolid,
+      epmr::dstudy))
+  }
+  return(out)
+}
+
+# Test it
+lapply(test, dstudy2)
 ```
 
 6. We know that any test administered in written form will require, to some extent, reading ability, though the test itself may not be intended to measure reading ability. We also know that science often involves some amount of math ability. Use linear models to examine the relationships between science, as a dependent variable, and math and reading, as independent variables. Note that only 6 of the 13 tests contain a math, reading, and science subtest. If a test contains more than one subtest in a subject area, choose one. Summarize results across these 6 tests.
