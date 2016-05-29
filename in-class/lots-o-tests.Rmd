@@ -1,4 +1,12 @@
-# Lots O' Tests
+---
+title: Lots o' Tests
+author: "Tony Albano"
+date: "May 24, 2016"
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
 
 ## Overview
 
@@ -41,13 +49,12 @@ Here are the different issues we need to address, with some tips on how you migh
 
 1. Read in the 13 data files, storing each one as a data frame, with R object names `test1` through `test13`. Rather than write the code out for each test, use a loop. See the `assign()` function as a way of programmatically naming your 13 R objects.
 
-```{r}
+    ```{r}
 test1 <- read.csv("test1.csv", row.names = 1)
-
 for(i in 1:13)
   assign(paste0("test", i), read.csv(paste0("test", i, ".csv"),
   row.names = 1))
-```
+    ```
 
 2. Prep the data for analysis. Run a frequency table on every variable and summarize the results, noting any unexpected values, and the counts of missings by subtest and test. This and some of the following exercises will be a lot easier if you put all your 13 data frames into a single list. You can then use `lapply()` to iterate through it.
 
@@ -167,17 +174,23 @@ knitr::kable(drout, digits = 2)
 ```
 
 ```{r}
-# Rewrite this stuff replacing tapply with our own function
+# Rewrite this stuff with our own function
 dstudy2 <- function(thetest) {
-  out <- matrix(NA, nrow = length(levels(thetest$schoolid)), ncol = 9)
+  out <- matrix(NA, nrow = 4, ncol = 9)
   for(j in 1:4) {
-    out[j, ] <- unlist(tapply(thetest[, j], thetest$schoolid,
-      epmr::dstudy))
+    out[j, ] <- unlist(dstudy(thetest[, j]))
   }
   return(out)
 }
 
+# Rewrite without the for loop
+dstudy3 <- function(thetest, whatcols = 1:4, ...) {
+  apply(thetest[, whatcols], 2, dstudy, ...)
+}
+
 # Test it
+lapply(test, function(x) apply(x[, 1:4], 2, dstudy))
+lapply(test, dstudy3)
 lapply(test, dstudy2)
 ```
 
